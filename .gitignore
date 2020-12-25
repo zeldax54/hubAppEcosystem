@@ -1,0 +1,8 @@
+*.json
+obj/
+bin/
+.vs/
+*.sln
+*.csproj
+*.user
+*.jwk
