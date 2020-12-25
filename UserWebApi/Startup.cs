@@ -71,8 +71,7 @@ namespace UserWebApi
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 6;
             });
-            services.AddControllers();     
-            
+            services.AddControllers();                 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
