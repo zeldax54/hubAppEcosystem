@@ -54,8 +54,7 @@ namespace Identity
             //Inject the classes we just created
           
             services.AddTransient<IResourceOwnerPasswordValidator, CustomResourceOwnerPasswordValidator>();
-            services.AddTransient<IProfileService, CustomProfileService>();
-            ;
+            services.AddTransient<IProfileService, CustomProfileService>();          
                 
                
         }

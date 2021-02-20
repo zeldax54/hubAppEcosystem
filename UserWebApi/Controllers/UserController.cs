@@ -33,26 +33,51 @@ namespace UserWebApi.Controllers
 
         [HttpPost("Register")]     
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
-        {          
-            var userExists = await userManager.FindByNameAsync(model.Username);
-            if (userExists != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
-
-            ApplicationUser user = new ApplicationUser()
+        {
+            var response = new Response();
+            try
             {
-                Email = model.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.Username,
-                Activo = true,
-            };
+                var userExists = await userManager.FindByNameAsync(model.Username);
+                if (userExists != null)
+                {
+                    response.Code = 500;
+                    response.Status = "Error";
+                    response.Message = "User already exists!";
+                }
+                else
+                {
+                    ApplicationUser user = new ApplicationUser()
+                    {
+                        Email = model.Email,
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        UserName = model.Username,
+                        Activo = true,
+                    };
 
-            var result = await userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded)
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
-            if (!await roleManager.RoleExistsAsync(UserRoles.User))            
-                await roleManager.CreateAsync(new IdentityRole(UserRoles.User));       
-            await userManager.AddToRoleAsync(user, UserRoles.User);
-            return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+                    var result = await userManager.CreateAsync(user, model.Password);
+                    if (!result.Succeeded)
+                        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+                    if (!await roleManager.RoleExistsAsync(UserRoles.User))
+                        await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                    await userManager.AddToRoleAsync(user, UserRoles.User);
+                    response.Code = 200;
+                    response.Status = "Success";
+                    response.Message = "User created successfully!";
+
+                }
+                return new JsonResult(response);
+            }
+            catch (Exception ex)
+            {
+                response.Code = 500;
+                response.Status = "Error";
+                response.Message = ex.Message;
+                return new JsonResult(response);
+            }
+            finally {
+               //Maybe do log here in a future
+            }
+           
         }
 
         [HttpPost("OnlyAdmin")]

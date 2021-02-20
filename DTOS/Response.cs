@@ -9,6 +9,7 @@ namespace UserWebApi.User
     public class Response
     {
         public string Status { get; set; }
+        public int Code { get; set; }
         public string Message { get; set; }
     }
 }
